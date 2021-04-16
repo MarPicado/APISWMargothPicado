@@ -56,7 +56,7 @@ class Vehicles(db.Model):
     crew = db.Column(db.Integer)
     passengers = db.Column(db.Integer)
     consumables = db.Column(db.String(40))
-
+    
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -66,4 +66,19 @@ class Vehicles(db.Model):
             "id": self.id,
             "email": self.email,
             # do not serialize the password, its a security breach
+        }
+    
+class Favorites(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    fav_name = db.Column(db.String(250), nullable=False)
+    
+    def _repr_(self):
+        return "<Favorites %r>" % self.id
+    
+    def serialize_favorites(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "fav_name": self.fav_name
         }
