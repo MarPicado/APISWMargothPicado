@@ -31,6 +31,21 @@ class Planets(db.Model):
     rotation_period = db.Column(db.Integer)
     diameter = db.Column(db.Integer)
     terrain = db.Column(db.String(40))
+    
+     # def _repr_(self):
+    #     return '<Planets %r>' % self.username
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "Name": self.name,
+            "Climate": self.climate,
+            "Population": self.population,
+            "Orbital Period": self.orbital_period,
+            "Rotation Period": self.rotation_period,
+            "Diameter": self.diameter,
+            "Terrain": self.terrain
+        }
 
 class People(db.Model):
     # Here we define columns for the table address.
@@ -43,6 +58,21 @@ class People(db.Model):
     birth_year = db.Column(db.String(40), nullable=False)
     height = db.Column(db.Integer)
     skin_color = db.Column(db.String(40))
+    
+    # def __repr__(self):
+    #     return '<People %r>' % self.username
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "Name": self.name,
+            "Gender": self.gender,
+            "Hair Color": self.hair_color,
+            "Eye Color": self.eye_color,
+            "Birth Year": self.birth_year,
+            "Height": self.height,
+            "Skin Color": self.skin_color
+        }
 
 class Vehicles(db.Model):
     # Here we define columns for the table address.
@@ -57,15 +87,20 @@ class Vehicles(db.Model):
     passengers = db.Column(db.Integer)
     consumables = db.Column(db.String(40))
     
-
-    def __repr__(self):
-        return '<User %r>' % self.username
+    # def __repr__(self):
+    #     return '<Vehicles %r>' % self.username
 
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email,
-            # do not serialize the password, its a security breach
+            "Name": self.name,
+            "Model": self.model,
+            "Cargo Capacity": self.cargo_capacity,
+            "Vehicle Class": self.vehicle_class,
+            "Length": self.length,
+            "Crew": self.crew,
+            "Passengers": self.passengers,
+            "Consumables": self.consumables
         }
     
 class Favorites(db.Model):

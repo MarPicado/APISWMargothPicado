@@ -120,10 +120,25 @@ def delete_usuarios(id):
 
 
 # --Planets--------------------------------------------------------
-@app.route('/planets/', methods=['GET'])
+@app.route('/testplanets', methods=['GET'])
 def get_planets():
     response = {"message": "it worked"}
     return jsonify(response)
+
+@app.route('/planets', methods=['GET'])
+def getPlanets():
+    planet = Planets.query.all()
+    request = list(map(lambda planet:planet.serialize(),planet))    
+    return jsonify(request), 200
+
+@app.route('/planets/<int:id>', methods=['GET'])
+def getPlanets_id(id):
+    #user = User.query.get(id)
+    planet = Planets.query.filter_by(id=id).first()
+    if planet is None:
+        raise APIException("Message:Requested data not found",status_code=404)
+    request = planet.serialize()
+    return jsonify(request), 200
 
 # --People--------------------------------------------------------
 @app.route('/people/', methods=['GET'])
