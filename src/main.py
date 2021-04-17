@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planets, People, Vehicles
+from models import db, User, Planets, People, Vehicles, Favorites
 #JWT - SECURITY
 #from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
@@ -83,13 +83,13 @@ def login():
         return jsonify(request_body), 200
 
 # --User--------------------------------------------------------
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def listarUsuarios():
     users = User.query.all()
     request = list(map(lambda user:user.serialize(),users))    
     return jsonify(request), 200
 
-@app.route('/user/<int:id>', methods=['GET'])
+@app.route('/users/<int:id>/favorites', methods=['GET'])
 def lista_usuario(id):
     #user = User.query.get(id)
     user = User.query.filter_by(id=id).first()
@@ -98,7 +98,7 @@ def lista_usuario(id):
     request = user.serialize()
     return jsonify(request), 200
 
-@app.route('/user', methods=["POST"])
+@app.route('/users', methods=["POST"])
 def crear_usuarios():
     data = request.get_json()
     #hashed_password = generate_password_hash(data["password"],method='sha256')
@@ -107,7 +107,7 @@ def crear_usuarios():
     db.session.commit()
     return jsonify("Message : Se adiciono un usuario!"),200
 
-@app.route('/user/<id>', methods=["DELETE"])
+@app.route('/users/<id>', methods=["DELETE"])
 @jwt_required()
 def delete_usuarios(id):
     current_user = get_jwt_identity()
@@ -141,18 +141,24 @@ def getPlanets_id(id):
     return jsonify(request), 200
 
 # --People--------------------------------------------------------
-@app.route('/people/', methods=['GET'])
+@app.route('/testpeople/', methods=['GET'])
 def get_people():
     response = {"message": "it worked"}
     return jsonify(response)
 
+@app.route('/people', methods=['GET'])
+def getPeople():
+    people = People.query.all()
+    request = list(map(lambda people:people.serialize(),people))    
+    return jsonify(request), 200
+
 @app.route('/people/<int:id>', methods=['GET'])
-def people_id(id):
+def getPeople_id(id):
     #user = User.query.get(id)
-    user = People.query.filter_by(id=id).first()
-    if user is None:
-        raise APIException("Message:No se encontro el user",status_code=404)
-    request = user.serialize()
+    people = People.query.filter_by(id=id).first()
+    if people is None:
+        raise APIException("Message:Requested data not found",status_code=404)
+    request = people.serialize()
     return jsonify(request), 200
 
 # --Vehicles--------------------------------------------------------
@@ -160,6 +166,13 @@ def people_id(id):
 def get_vehicles():
     response = {"message": "it worked"}
     return jsonify(response)
+
+# --Favorites--------------------------------------------------------
+@app.route('/favorites/', methods=['GET'])
+def get_favorites():
+    response = {"message": "it worked"}
+    return jsonify(response)
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
