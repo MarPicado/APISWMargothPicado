@@ -89,14 +89,17 @@ def listarUsuarios():
     request = list(map(lambda user:user.serialize(),users))    
     return jsonify(request), 200
 
-@app.route('/users/<int:id>/favorites', methods=['GET'])
-def lista_usuario(id):
-    #user = User.query.get(id)
-    user = User.query.filter_by(id=id).first()
-    if user is None:
-        raise APIException("Message:No se encontro el user",status_code=404)
-    request = user.serialize()
-    return jsonify(request), 200
+# @app.route('/favorites/<id>', methods=['GET'])
+# def favs_usuario(id):
+#     #user = User.query.get(id)
+#     # favs = Favorites.query.filter_by(id=id).first()
+#     # # if user is None:
+#     # #     raise APIException("Message:No se encontro el user",status_code=404)
+#     # request = favs.serialize()
+#     # return jsonify(request), 200
+#     favs = Favorites.query.all()
+#     request = list(map(lambda x:x.serialize(),favs))    
+#     return jsonify(request), 200
 
 @app.route('/users', methods=["POST"])
 def crear_usuarios():
@@ -172,6 +175,17 @@ def get_vehicles():
 def get_favorites():
     response = {"message": "it worked"}
     return jsonify(response)
+
+@app.route('/favorites/<int:user_id>', methods=['GET'])
+def get_favorites_id(user_id):
+    # user_id=3
+    todos = Favorites.query.all()
+    lista_favs = list(map(lambda x: x.serialize_favorites(), todos))
+    user_favs = list(filter( lambda x: x["user_id"] == user_id , lista_favs))
+    favoritos = list(map( lambda x: x["fav_name"], user_favs))
+    result = favoritos
+
+    return jsonify(result), 200
 
 
 # this only runs if `$ python src/main.py` is executed
