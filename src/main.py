@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planets, People, Vehicles, Favorites
+from models import db, User, Planet, People, Vehicle
 #JWT - SECURITY
 #from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
