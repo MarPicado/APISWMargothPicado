@@ -119,7 +119,9 @@ class Fav_People(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "people_id": self.people_id
+            "people_id": self.people_id,
+            "route": "/people/" + str(self.id),
+            "name": self.people.name
         }
 
 class Fav_Planet(db.Model):
@@ -135,5 +137,7 @@ class Fav_Planet(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "planet_id": self.planet_id
+            "planet_id": self.planet_id,
+            "route": "/planet/" + str(self.id),
+            "name": self.planet.name
         }

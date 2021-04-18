@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet, People, Vehicle
+from models import db, User, Planet, People, Vehicle, Fav_Planet, Fav_People
 #JWT - SECURITY
 #from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
@@ -137,10 +137,10 @@ def getPlanets():
 @app.route('/planets/<int:id>', methods=['GET'])
 def getPlanets_id(id):
     #user = User.query.get(id)
-    planet = Planets.query.filter_by(id=id).first()
-    if planet is None:
+    planeta = Planet.query.filter_by(id=id).first()
+    if planeta is None:
         raise APIException("Message:Requested data not found",status_code=404)
-    request = planet.serialize()
+    request = planeta.serialize()
     return jsonify(request), 200
 
 # --People--------------------------------------------------------
@@ -176,17 +176,46 @@ def get_favorites():
     response = {"message": "it worked"}
     return jsonify(response)
 
-@app.route('/favorites/<int:user_id>', methods=['GET'])
-def get_favorites_id(user_id):
-    # user_id=3
-    todos = Favorites.query.all()
-    lista_favs = list(map(lambda x: x.serialize_favorites(), todos))
-    user_favs = list(filter( lambda x: x["user_id"] == user_id , lista_favs))
-    favoritos = list(map( lambda x: x["fav_name"], user_favs))
-    result = favoritos
+# @app.route('/favorites/<int:user_id>', methods=['GET'])
+# def get_favorites_id(user_id):
+#     # user_id=3
+#     todos = Favorites.query.all()
+#     lista_favs = list(map(lambda x: x.serialize(), todos))
+#     user_favs = list(filter( lambda x: x["user_id"] == user_id , lista_favs))
+#     favoritos = list(map( lambda x: x["fav_name"], user_favs))
+#     result = favoritos
 
-    return jsonify(result), 200
+#     return jsonify(result), 200
 
+@app.route('/users/<int:id_user>/favorites', methods=['GET'])
+def get_favoritesfromuser(id_user):
+    favpeople = Fav_People.query.filter_by(user_id=id_user)
+    favplanet = Fav_Planet.query.filter_by(user_id=id_user)
+    favpeople_serialize = list(map(lambda x:x.serialize(),favpeople))
+    favplanet_serialize = list(map(lambda x:x.serialize(),favplanet))
+    fav_response = favpeople_serialize + favplanet_serialize
+    return jsonify(fav_response)
+
+@app.route('/users/<int:id_user>/favorites', methods=['POST'])
+@jwt_required()
+def POST_favoritestouser(id_user):
+    tipo = request.json.get("tipo", None)
+    id = request.json.get("id", None)
+    
+    if tipo == "planet":
+        favPlanet = Fav_Planet(user_id=id_user, planet_id=id)
+        db.session.add(favPlanet)
+        db.session.commit()
+        
+        return jsonify(favPlanet.serialize()), 200
+    
+    if tipo == "people":
+        favPeople = Fav_People(user_id=id_user, people_id=id)
+        db.session.add(favPeople)
+        db.session.commit()
+        
+        return jsonify(favPeople.serialize()), 200
+    return APIException("Bad Request", status_code=400)
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
