@@ -128,9 +128,9 @@ def get_planets():
     response = {"message": "it worked"}
     return jsonify(response)
 
-@app.route('/planets', methods=['GET'])
+@app.route('/planet', methods=['GET'])
 def getPlanets():
-    planet = Planets.query.all()
+    planet = Planet.query.all()
     request = list(map(lambda planet:planet.serialize(),planet))    
     return jsonify(request), 200
 
@@ -197,7 +197,7 @@ def get_favoritesfromuser(id_user):
     return jsonify(fav_response)
 
 @app.route('/users/<int:id_user>/favorites', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def POST_favoritestouser(id_user):
     tipo = request.json.get("tipo", None)
     id = request.json.get("id", None)
@@ -216,6 +216,31 @@ def POST_favoritestouser(id_user):
         
         return jsonify(favPeople.serialize()), 200
     return APIException("Bad Request", status_code=400)
+
+@app.route('/favorite/<string:tipo>/<int:favorite_id>', methods=['DELETE'])
+# @jwt_required()
+def delete_favfromuser(tipo, favorite_id):
+    if tipo == "planet":
+        delete_fav = Fav_Planet.query.filter_by(id=favorite_id).first()
+        print(delete_fav)
+        if delete_fav is None:
+            return "Not Found", 401
+        else:
+            db.session.delete(delete_fav)
+            db.session.commit()
+            return jsonify(delete_fav.serialize()),200
+    elif tipo == "people":
+        delete_fav = Fav_People.query.filter_by(id=favorite_id).first()
+        print(delete_fav)
+        if delete_fav is None:
+            return "Not Found", 401
+        else:
+            db.session.delete(delete_fav)
+            db.session.commit()
+            return jsonify(delete_fav.serialize()),200
+        
+    return "Wrong Request", 402
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':

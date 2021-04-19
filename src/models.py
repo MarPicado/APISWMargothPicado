@@ -110,7 +110,7 @@ class Fav_People(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     people_id = db.Column(db.Integer, db.ForeignKey("people.id"))
-    people = db.relationship("People", lazy=True)
+    people = db.relationship("People", lazy="subquery")
     
     def _repr_(self):
         return "<Fav_People %r>" % self.people.name
@@ -128,7 +128,7 @@ class Fav_Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"))
-    planet = db.relationship("Planet", lazy=True)
+    planet = db.relationship("Planet", lazy="subquery")
     
     def _repr_(self):
         return "<Fav_Planet %r>" % self.planet.name
