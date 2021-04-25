@@ -76,36 +76,6 @@ class People(db.Model):
             "Skin Color": self.skin_color
         }
 
-class Vehicle(db.Model):
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    model = db.Column(db.String(50))
-    cargo_capacity = db.Column(db.Integer)
-    vehicle_class = db.Column(db.String(40))
-    length = db.Column(db.Integer)
-    crew = db.Column(db.Integer)
-    passengers = db.Column(db.Integer)
-    consumables = db.Column(db.String(40))
-    
-    # def __repr__(self):
-    #     return '<Vehicles %r>' % self.username
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "Name": self.name,
-            "Model": self.model,
-            "Cargo Capacity": self.cargo_capacity,
-            "Vehicle Class": self.vehicle_class,
-            "Length": self.length,
-            "Crew": self.crew,
-            "Passengers": self.passengers,
-            "Consumables": self.consumables
-        }
-    
-
 class Fav_People(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))

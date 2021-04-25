@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet, People, Vehicle, Fav_Planet, Fav_People
+from models import db, User, Planet, People, Fav_Planet, Fav_People
 #JWT - SECURITY
 #from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
@@ -163,12 +163,6 @@ def getPeople_id(id):
         raise APIException("Message:Requested data not found",status_code=404)
     request = people.serialize()
     return jsonify(request), 200
-
-# --Vehicles--------------------------------------------------------
-@app.route('/vehicles/', methods=['GET'])
-def get_vehicles():
-    response = {"message": "it worked"}
-    return jsonify(response)
 
 # --Favorites--------------------------------------------------------
 @app.route('/favorites/', methods=['GET'])
