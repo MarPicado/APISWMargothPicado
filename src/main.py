@@ -49,38 +49,64 @@ def sitemap():
 
 #     return jsonify(response_body), 200
 
+
+#register---------------------------------------------------------
+@app.route("/register", methods=["POST"])
+def register_user():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    if email is None:
+        return jsonify({"msg": "No email was provided"}), 400
+    if password is None:
+        return jsonify({"msg": "No password was provided"}), 400
+    
+    user = User.query.filter_by(email=email, password=password).first()
+    if user:
+        # the user was not found on the database
+        return jsonify({"msg": "User already exists"}), 401
+    else:
+        new_user = User()
+        new_user.email = email
+        new_user.password = password
+
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"msg": "User created successfully"}), 200
+    
 #login---------------------------------------------------------
-@app.route('/login', methods=["POST"])
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "POST":
-        username = request.json["username"]
-        password = request.json["password"]
+        email = request.json.get("email", None)
+        password = request.json.get("password", None)
 
         # Validate
-        if not username:
-            return jsonify({"error": "username Invalid"}), 400
-        if not password:
-            return jsonify({"error": "Password Invalid"}), 400
+        if email is None:
+            return jsonify({"error": "Please provide an email"}), 400
+        if password is None:
+            return jsonify({"error": "Please provide a password"}), 400
         
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(email=email, password=password).first()
 
-        if not user:
-            return jsonify({"error": "User not found"}), 400
-        
-        #if not check_password_hash(user.password, password):
-        #    return jsonify({"error": "Wrong password"}), 400
-        
-        # Create Access Token
-        expiration_date = datetime.timedelta(days=1)
-        #expiration_date = datetime.timedelta(minutes=1)
-        access_token = create_access_token(identity=username, expires_delta=expiration_date)
+        if user is None:
+            return jsonify({"error": "Invalid email or password"}), 401 
+        elif user.password != password:
+            return jsonify({"error": "User or password not found"}), 401
+        else:
+            print(user)
+            # create a new token with the user id inside
+            access_token = create_access_token(identity=user.id)
+            return jsonify({ "token": access_token, "user_id": user.id }), 200
 
-        request_body = {
-            "user": user.serialize(),
-            "token": access_token
-        }
-
-        return jsonify(request_body), 200
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+     # Access the identity of the current user with get_jwt_identity
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    
+    print(current_user_id, user)
+    return jsonify({"id": user.id, "email": user.email }), 200
 
 # --User--------------------------------------------------------
 @app.route('/users', methods=['GET'])

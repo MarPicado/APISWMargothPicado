@@ -4,21 +4,20 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120), unique=True, nullable=False)
+    # username = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     fav_people = db.relationship("Fav_People", lazy=True)
     fav_planet = db.relationship("Fav_Planet", lazy=True)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def serialize(self):
         return {
             "id": self.id,
-            "username": self.username,
             "email": self.email,
-            "password": self.password #para efectos de estudiar, si quiero verlo, pero real life NOOOOO se pone
+            # "password": self.password #para efectos de estudiar, si quiero verlo, pero real life NOOOOO se pone
             # do not serialize the password, its a security breach
         }
 
@@ -43,8 +42,8 @@ class Planet(db.Model):
             "Name": self.name,
             "Climate": self.climate,
             "Population": self.population,
-            "Orbital Period": self.orbital_period,
-            "Rotation Period": self.rotation_period,
+            "Orbital_Period": self.orbital_period,
+            "Rotation_Period": self.rotation_period,
             "Diameter": self.diameter,
             "Terrain": self.terrain
         }
@@ -69,11 +68,11 @@ class People(db.Model):
             "id": self.id,
             "Name": self.name,
             "Gender": self.gender,
-            "Hair Color": self.hair_color,
-            "Eye Color": self.eye_color,
-            "Birth Year": self.birth_year,
+            "Hair_Color": self.hair_color,
+            "Eye_Color": self.eye_color,
+            "Birth_Year": self.birth_year,
             "Height": self.height,
-            "Skin Color": self.skin_color
+            "Skin_Color": self.skin_color
         }
 
 class Fav_People(db.Model):
